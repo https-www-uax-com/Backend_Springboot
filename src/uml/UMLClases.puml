@@ -1,0 +1,95 @@
+@startuml
+package domain {
+
+  class BiologicalData {
+    - Long id
+    - String sampleType
+    - String data
+    - LocalDateTime timestamp
+    --
+    + getId() : Long
+    + setId(Long id) : void
+    + getSampleType() : String
+    + setSampleType(String sampleType) : void
+    + getData() : String
+    + setData(String data) : void
+    + getTimestamp() : LocalDateTime
+    + setTimestamp(LocalDateTime timestamp) : void
+  }
+
+  class Experiment {
+    - Long id
+    - String experimentName
+    - LocalDateTime startDate
+    - LocalDateTime endDate
+    --
+    + getId() : Long
+    + setId(Long id) : void
+    + getExperimentName() : String
+    + setExperimentName(String name) : void
+    + getStartDate() : LocalDateTime
+    + setStartDate(LocalDateTime startDate) : void
+    + getEndDate() : LocalDateTime
+    + setEndDate(LocalDateTime endDate) : void
+  }
+
+  class Sample {
+    - Long id
+    - String sampleCode
+    - BiologicalData biologicalData
+    --
+    + getId() : Long
+    + setId(Long id) : void
+    + getSampleCode() : String
+    + setSampleCode(String sampleCode) : void
+  }
+
+  class Researcher {
+    - Long id
+    - String name
+    - String specialty
+    --
+    + getId() : Long
+    + setId(Long id) : void
+    + getName() : String
+    + setName(String name) : void
+    + getSpecialty() : String
+    + setSpecialty(String specialty) : void
+  }
+
+  class AnalysisResult {
+    - Long id
+    - Sample sample
+    - String result
+    --
+    + getId() : Long
+    + setId(Long id) : void
+    + getSample() : Sample
+    + setSample(Sample sample) : void
+    + getResult() : String
+    + setResult(String result) : void
+  }
+
+  class Lab {
+    - Long id
+    - String labName
+    - String location
+    --
+    + getId() : Long
+    + setId(Long id) : void
+    + getLabName() : String
+    + setLabName(String labName) : void
+    + getLocation() : String
+    + setLocation(String location) : void
+  }
+
+}
+
+BiologicalData --> Sample : used by
+Sample --> AnalysisResult : analyzed by
+Experiment --> Sample : contains
+
+Researcher --> Experiment : manages
+Lab --> Experiment : conducts
+
+@enduml
