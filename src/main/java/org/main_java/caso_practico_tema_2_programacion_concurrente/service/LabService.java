@@ -39,7 +39,16 @@ public class LabService {
                 .map(lab -> mapToDTO(lab, new LabDTO()))
                 .orElseThrow(() -> new NotFoundException("Laboratorio no encontrado"));
     }
-    
+
+
+    // Crea un nuevo laboratorio
+    public Long create(final LabDTO labDTO) {
+        Lab lab = new Lab();
+        mapToEntity(labDTO, lab);
+        return labRepository.save(lab).getId();
+    }
+
+
 
 
 }
