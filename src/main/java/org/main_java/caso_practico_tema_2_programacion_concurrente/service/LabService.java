@@ -31,6 +31,14 @@ public class LabService {
                 .map(lab -> mapToDTO(lab, new LabDTO()))
                 .collect(Collectors.toList());
     }
+
+
+    // Obtiene un laboratorio específico por ID
+    public LabDTO get(final Long id) {
+        return labRepository.findById(id)
+                .map(lab -> mapToDTO(lab, new LabDTO()))
+                .orElseThrow(() -> new NotFoundException("Laboratorio no encontrado"));
+    }
     
 
 
