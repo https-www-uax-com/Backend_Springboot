@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/researchers")
+@RequestMapping("/api/researchers")
 public class ResearcherResource {
 
     private final ResearcherService researcherService;
@@ -19,35 +19,36 @@ public class ResearcherResource {
         this.researcherService = researcherService;
     }
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ApiResponse(responseCode = "200", description = "Get all researchers")
-    public ResponseEntity<List<ResearcherDTO>> getAllResearchers(@RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(researcherService.findAll(token));
+    public ResponseEntity<List<ResearcherDTO>> getAllResearchers() {
+        return ResponseEntity.ok(researcherService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResearcherDTO> getResearcher(@PathVariable final Long id, @RequestHeader("Authorization") String token) {
-        ResearcherDTO researcher = researcherService.get(id);
-        return ResponseEntity.ok(researcher);
+    public ResponseEntity<ResearcherDTO> getResearcher(@PathVariable final Long id) {
+        return ResponseEntity.ok(researcherService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201", description = "Create a new researcher")
-    public ResponseEntity<Long> createResearcher(@RequestBody final ResearcherDTO researcherDTO, @RequestHeader("Authorization") String token) {
-        Long createdId = researcherService.create(researcherDTO);
+    public ResponseEntity<Long> createResearcher(@RequestBody final ResearcherDTO researcherDTO) {
+        final Long createdId = researcherService.create(researcherDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateResearcher(@PathVariable final Long id, @RequestBody final ResearcherDTO researcherDTO, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<Void> updateResearcher(@PathVariable final Long id,
+                                                 @RequestBody final ResearcherDTO researcherDTO) {
         researcherService.update(id, researcherDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "204", description = "Delete a researcher")
-    public ResponseEntity<Void> deleteResearcher(@PathVariable final Long id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<Void> deleteResearcher(@PathVariable final Long id) {
         researcherService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
+

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/analysis-results")
+@RequestMapping("/api/analysis-results")
 public class AnalysisResultResource {
 
     private final AnalysisResultService analysisResultService;
@@ -19,35 +19,24 @@ public class AnalysisResultResource {
         this.analysisResultService = analysisResultService;
     }
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ApiResponse(responseCode = "200", description = "Get all analysis results")
-    public ResponseEntity<List<AnalysisResultDTO>> getAllAnalysisResults(@RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(analysisResultService.findAll(token));
+    public ResponseEntity<List<AnalysisResultDTO>> getAllAnalysisResults() {
+        return ResponseEntity.ok(analysisResultService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AnalysisResultDTO> getAnalysisResult(@PathVariable final Long id, @RequestHeader("Authorization") String token) {
-        AnalysisResultDTO analysisResult = analysisResultService.get(id);
-        return ResponseEntity.ok(analysisResult);
+    public ResponseEntity<AnalysisResultDTO> getAnalysisResult(@PathVariable final Long id) {
+        return ResponseEntity.ok(analysisResultService.get(id));
     }
 
     @PostMapping
     @ApiResponse(responseCode = "201", description = "Create a new analysis result")
-    public ResponseEntity<Long> createAnalysisResult(@RequestBody final AnalysisResultDTO analysisResultDTO, @RequestHeader("Authorization") String token) {
-        Long createdId = analysisResultService.create(analysisResultDTO);
+    public ResponseEntity<Long> createAnalysisResult(@RequestBody final AnalysisResultDTO analysisResultDTO) {
+        final Long createdId = analysisResultService.create(analysisResultDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateAnalysisResult(@PathVariable final Long id, @RequestBody final AnalysisResultDTO analysisResultDTO, @RequestHeader("Authorization") String token) {
-        analysisResultService.update(id, analysisResultDTO);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204", description = "Delete an analysis result")
-    public ResponseEntity<Void> deleteAnalysisResult(@PathVariable final Long id, @RequestHeader("Authorization") String token) {
-        analysisResultService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-}
+    public ResponseEntity<Void> updateAnalysisResult(@PathVariable final Long id,
+                                                     @RequestBody final AnalysisResultDTO analysisResultDTO)

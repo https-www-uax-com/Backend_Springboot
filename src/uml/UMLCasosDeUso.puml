@@ -1,3 +1,50 @@
 @startuml
 
+left to right direction
+
+actor "Investigador" as Researcher
+actor "Administrador del laboratorio" as LabAdmin
+actor "Usuario" as User
+
+rectangle "Sistema de Gestión de Experimentación Biológica" as System {
+
+  usecase "Registrar muestra" as RegisterSample
+  usecase "Analizar muestra" as AnalyzeSample
+  usecase "Consultar experimentos" as ConsultExperiments
+  usecase "Administrar investigadores" as ManageResearchers
+  usecase "Generar informe de análisis" as GenerateAnalysisReport
+  usecase "Consultar resultados de análisis" as ViewAnalysisResults
+  usecase "Ver datos biológicos de una muestra" as ViewBiologicalData
+  usecase "Administrar laboratorios" as ManageLabs
+  usecase "Ver detalles de laboratorio" as ViewLabDetails
+  usecase "Consultar muestras registradas" as ConsultSamples
+}
+
+rectangle "Sistema Externo" as ExternalSystem {
+  usecase "Integrar datos externos" as IntegrateExternalData
+}
+
+Researcher -down-> RegisterSample : Registra muestra
+Researcher -down-> AnalyzeSample : Realiza análisis
+Researcher -down-> ConsultExperiments : Consulta experimentos
+Researcher -down-> GenerateAnalysisReport : Genera informe
+Researcher -down-> ViewAnalysisResults : Visualiza resultados
+Researcher -down-> ViewBiologicalData : Visualiza datos
+Researcher -down-> ConsultSamples : Consulta muestras
+
+LabAdmin -down-> ManageResearchers : Administra investigadores
+LabAdmin -down-> ManageLabs : Administra laboratorios
+LabAdmin -down-> ConsultExperiments : Supervisa experimentos
+LabAdmin -down-> ViewLabDetails : Consulta detalles
+LabAdmin -down-> ConsultSamples : Consulta muestras
+
+User -down-> ViewAnalysisResults : Consulta resultados
+User -down-> ViewBiologicalData : Consulta datos
+User -down-> ViewLabDetails : Consulta detalles
+User -down-> ConsultSamples : Consulta muestras
+
+ExternalSystem -right-> IntegrateExternalData : Envía datos
+IntegrateExternalData -left-> RegisterSample : Proporciona datos externos
+
 @enduml
+
