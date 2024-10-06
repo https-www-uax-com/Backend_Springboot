@@ -67,7 +67,19 @@ public class LabService {
     }
 
 
+    // Mapea de Lab a LabDTO
+    private LabDTO mapToDTO(final Lab lab, final LabDTO labDTO) {
+        // Asignamos el ID de la entidad Lab al DTO
+        labDTO.setId(lab.getId());
 
+        // Asignamos el nombre del laboratorio [LabName] de la entidad Lab al DTO
+        labDTO.setLabName(lab.getLabName());
+
+        // Asignamos la ubicación del laboratorio [Location] de la entidad Lab al DTO
+        labDTO.setLocation(lab.getLocation());
+
+        return labDTO;
+    }
 
 
 
