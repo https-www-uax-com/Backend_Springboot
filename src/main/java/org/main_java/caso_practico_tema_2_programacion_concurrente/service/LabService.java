@@ -49,6 +49,13 @@ public class LabService {
     }
 
 
-
+    // Actualiza un laboratorio existente
+    public void update(final Long id, final LabDTO labDTO) {
+        Lab lab = labRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Laboratorio no encontrado"));
+        mapToEntity(labDTO, lab);
+        labRepository.save(lab);
+    }
+    
 
 }
