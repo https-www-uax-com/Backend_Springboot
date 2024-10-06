@@ -4,6 +4,8 @@ import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.Usuari
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
