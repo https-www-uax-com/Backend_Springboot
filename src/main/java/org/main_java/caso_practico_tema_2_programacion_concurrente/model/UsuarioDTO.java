@@ -26,7 +26,6 @@ public class UsuarioDTO {
     private String apellido2;
 
     @NotNull
-    //@email
     @Size(max = 255)
     private String correo;
 

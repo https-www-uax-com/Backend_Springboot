@@ -20,6 +20,4 @@ public class CredencialesDTO {
     @Size(max = 255)
     private String password;
 
-    // private UsuarioDTO credencial;
-    // Se consideren innecesarios pero se dejan por si se requieren en un futuro
 }

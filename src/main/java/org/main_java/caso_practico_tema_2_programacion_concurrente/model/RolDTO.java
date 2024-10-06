@@ -17,6 +17,4 @@ public class RolDTO {
     @Size(max = 255)
     private String nombre;
 
-    // private Set<UsuarioDTO> rolId;
-    // Se consideren innecesarios pero se dejan por si se requieren en un futuro
 }
