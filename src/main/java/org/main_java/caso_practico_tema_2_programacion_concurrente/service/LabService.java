@@ -56,6 +56,19 @@ public class LabService {
         mapToEntity(labDTO, lab);
         labRepository.save(lab);
     }
-    
+
+
+    // Elimina un laboratorio por su ID
+    public void delete(final Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id no puede ser null");
+        }
+        labRepository.deleteById(id);
+    }
+
+
+
+
+
 
 }
