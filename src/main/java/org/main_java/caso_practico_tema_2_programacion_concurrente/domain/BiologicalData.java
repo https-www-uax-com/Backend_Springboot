@@ -18,8 +18,13 @@ public class BiologicalData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String sampleType;  // Tipo de muestra: [genética, bioquímica, física]
+
+    @Column(nullable = false)
     private String data;        // Datos específicos de la muestra
+
+    @Column(nullable = false)
     private LocalDateTime timestamp;
 
 }
