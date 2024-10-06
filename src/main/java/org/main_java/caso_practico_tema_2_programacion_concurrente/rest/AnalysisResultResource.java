@@ -39,4 +39,15 @@ public class AnalysisResultResource {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateAnalysisResult(@PathVariable final Long id,
-                                                     @RequestBody final AnalysisResultDTO analysisResultDTO)
+                                                     @RequestBody final AnalysisResultDTO analysisResultDTO) {
+        analysisResultService.update(id, analysisResultDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "204", description = "Delete an analysis result")
+    public ResponseEntity<Void> deleteAnalysisResult(@PathVariable final Long id) {
+        analysisResultService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}

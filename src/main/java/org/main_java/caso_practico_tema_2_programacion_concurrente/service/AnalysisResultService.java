@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class AnalysisResultService {
     private final AnalysisResultRepository analysisResultRepository;
 
@@ -18,9 +19,9 @@ public class AnalysisResultService {
     }
 
     public List<AnalysisResultDTO> findAll() {
-        final List<AnalysisResult> analysisResultList = analysisResultRepository.findAll(Sort.by("id"));
-        return analysisResultList.stream()
-                .map(AnalysisResult -> mapToDTO(analysisResultList, new AnalysisResultDTO()))
+        final List<AnalysisResult> analysisResults = analysisResultRepository.findAll(Sort.by("id"));
+        return analysisResults.stream()
+                .map(analysisResult -> mapToDTO(analysisResult, new AnalysisResultDTO()))
                 .collect(Collectors.toList());
     }
 
@@ -53,14 +54,12 @@ public class AnalysisResultService {
     // Mapeo de entidad a DTO.md
     private AnalysisResultDTO mapToDTO(final AnalysisResult analysisResult, final AnalysisResultDTO analysisResultDTO) {
         analysisResultDTO.setId(analysisResult.getId());
-        analysisResultDTO.setSample(analysisResult.getSample());
         analysisResultDTO.setResult(analysisResult.getResult());
         return analysisResultDTO;
     }
 
     // Mapeo de DTO.md a entidad
     private AnalysisResult mapToEntity(final AnalysisResultDTO analysisResultDTO, final AnalysisResult analysisResult) {
-        analysisResult.setSample(analysisResultDTO.getSample());
         analysisResult.setResult(analysisResultDTO.getResult());
         return analysisResult;
     }
