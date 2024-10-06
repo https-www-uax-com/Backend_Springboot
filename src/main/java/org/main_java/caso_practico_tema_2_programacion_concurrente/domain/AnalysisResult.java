@@ -19,6 +19,7 @@ public class AnalysisResult {
     @OneToOne
     private Sample sample;
 
+    @Column(nullable = false)
     private String result;
 }
 

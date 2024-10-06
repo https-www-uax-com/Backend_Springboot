@@ -5,26 +5,24 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
-@Table(name= "BiologicalDatas")
+@Table(name= "Rols")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class BiologicalData {
+
+public class Rol {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String sampleType;  // Tipo de muestra: [genética, bioquímica, física]
+    private String nombre;
 
-    @Column(nullable = false)
-    private String data;        // Datos específicos de la muestra
-
-    @Column(nullable = false)
-    private LocalDateTime timestamp;
+    @OneToMany(mappedBy = "usuarios")
+    private Set<Usuario> rolId;
 
 }

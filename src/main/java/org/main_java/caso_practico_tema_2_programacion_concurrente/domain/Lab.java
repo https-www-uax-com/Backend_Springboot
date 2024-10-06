@@ -17,7 +17,10 @@ public class Lab {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String labName;
+
+    @Column(nullable = false)
     private String location;
 
     @OneToMany(mappedBy = "lab", cascade = CascadeType.ALL)
