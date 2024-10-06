@@ -52,7 +52,7 @@ public class ExperimentService {
         experimentRepository.deleteById(id);
     }
 
-    // Mapeo de entidad a DTO
+    // Mapeo de entidad a DTO.md
     private ExperimentDTO mapToDTO(final Experiment experiment, final ExperimentDTO experimentDTO) {
         experimentDTO.setId(experiment.getId());
         experimentDTO.setExperimentName(experiment.getExperimentName()); // Asignamos el nombre a el experimento
@@ -61,7 +61,7 @@ public class ExperimentService {
         return experimentDTO;
     }
 
-    // Mapeo de DTO a entidad
+    // Mapeo de DTO.md a entidad
     private Experiment mapToEntity(final ExperimentDTO experimentDTO, final Experiment experiment) {
         experiment.setExperimentName(experimentDTO.getExperimentName());
         experiment.setStartDate(experimentDTO.getStartDate());

@@ -52,7 +52,7 @@ public class ResearcherService {
         researcherRepository.deleteById(id);
     }
 
-    // Mapeo de entidad a DTO
+    // Mapeo de entidad a DTO.md
     private ResearcherDTO mapToDTO(final Researcher researcher, final ResearcherDTO researcherDTO) {
         researcherDTO.setId(researcher.getId());
         researcherDTO.setName(researcher.getName());
@@ -60,7 +60,7 @@ public class ResearcherService {
         return researcherDTO;
     }
 
-    // Mapeo de DTO a entidad
+    // Mapeo de DTO.md a entidad
     private Researcher mapToEntity(final ResearcherDTO researcherDTO, final Researcher researcher) {
         researcher.setName(researcherDTO.getName());
         researcher.setSpecialty(researcherDTO.getSpecialty());

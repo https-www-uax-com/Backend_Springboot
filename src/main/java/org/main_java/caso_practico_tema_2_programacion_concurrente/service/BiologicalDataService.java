@@ -52,7 +52,7 @@ public class BiologicalDataService {
         biologicalDataRepository.deleteById(id);
     }
 
-    // Mapeo de entidad a DTO
+    // Mapeo de entidad a DTO.md
     private BiologicalDataDTO mapToDTO(final BiologicalData biologicalData, final BiologicalDataDTO biologicalDataDTO) {
         biologicalDataDTO.setId(biologicalData.getId());
         biologicalDataDTO.setSampleType(biologicalData.getSampleType());
@@ -61,7 +61,7 @@ public class BiologicalDataService {
         return biologicalDataDTO;
     }
 
-    // Mapeo de DTO a entidad
+    // Mapeo de DTO.md a entidad
     private BiologicalData mapToEntity(final BiologicalDataDTO biologicalDataDTO, final BiologicalData biologicalData) {
         biologicalData.setSampleType(biologicalDataDTO.getSampleType());
         biologicalData.setData(biologicalDataDTO.getData());
