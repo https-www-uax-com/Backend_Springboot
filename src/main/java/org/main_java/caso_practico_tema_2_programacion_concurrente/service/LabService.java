@@ -22,6 +22,16 @@ public class LabService {
         this.labRepository = labRepository;
         this.experimentRepository = experimentRepository;
     }
+
+
+    // Obtiene una lista de todos los laboratorios
+    public List<LabDTO> findAll() {
+        final List<Lab> labs = labRepository.findAll(Sort.by("id"));
+        return labs.stream()
+                .map(lab -> mapToDTO(lab, new LabDTO()))
+                .collect(Collectors.toList());
+    }
     
+
 
 }
