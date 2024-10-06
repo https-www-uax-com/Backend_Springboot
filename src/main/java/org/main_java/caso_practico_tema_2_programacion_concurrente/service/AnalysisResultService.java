@@ -1,5 +1,15 @@
 package org.main_java.caso_practico_tema_2_programacion_concurrente.service;
 
+import org.main_java.caso_practico_tema_2_programacion_concurrente.model.AnalysisResultDTO;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.AnalysisResultRepository;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.AnalysisResult;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.util.NotFoundException;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class AnalysisResultService {
     private final AnalysisResultRepository analysisResultRepository;
 
