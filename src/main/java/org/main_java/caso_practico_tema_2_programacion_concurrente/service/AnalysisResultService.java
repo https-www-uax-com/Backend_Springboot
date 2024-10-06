@@ -14,13 +14,13 @@ public class AnalysisResultService {
     private final AnalysisResultRepository analysisResultRepository;
 
     public AnalysisResultService(final AnalysisResultRepository analysisResultRepository) {
-        this.analysisResultRepository = analysisResultRepositoryRepository;
+        this.analysisResultRepository = analysisResultRepository;
     }
 
     public List<AnalysisResultDTO> findAll() {
         final List<AnalysisResult> analysisResultList = analysisResultRepository.findAll(Sort.by("id"));
         return analysisResultList.stream()
-                .map(AnalysisResult -> mapToDTO(analysisResult, new AnalysisResultDTO()))
+                .map(AnalysisResult -> mapToDTO(analysisResultList, new AnalysisResultDTO()))
                 .collect(Collectors.toList());
     }
 
@@ -59,7 +59,7 @@ public class AnalysisResultService {
     }
 
     // Mapeo de DTO.md a entidad
-    private AnalysisResult mapToEntity(final AnalysisResultDTO analysisDTO, final AnalysisResult analysisResult) {
+    private AnalysisResult mapToEntity(final AnalysisResultDTO analysisResultDTO, final AnalysisResult analysisResult) {
         analysisResult.setSample(analysisResultDTO.getSample());
         analysisResult.setResult(analysisResultDTO.getResult());
         return analysisResult;
