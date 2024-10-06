@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 public class LabService {
 
     private final LabRepository labRepository;
-    private final ExperimentRepository experimentRepository;
+    //private final ExperimentRepository experimentRepository;
 
     public LabService(LabRepository labRepository, ExperimentRepository experimentRepository) {
         this.labRepository = labRepository;
-        this.experimentRepository = experimentRepository;
+       //this.experimentRepository = experimentRepository;
     }
 
 
@@ -37,7 +37,7 @@ public class LabService {
     public LabDTO get(final Long id) {
         return labRepository.findById(id)
                 .map(lab -> mapToDTO(lab, new LabDTO()))
-                .orElseThrow(() -> new NotFoundException("Laboratorio no encontrado"));
+                .orElseThrow(NotFoundException::new);
     }
 
 
@@ -52,7 +52,7 @@ public class LabService {
     // Actualiza un laboratorio existente
     public void update(final Long id, final LabDTO labDTO) {
         Lab lab = labRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Laboratorio no encontrado"));
+                .orElseThrow(NotFoundException::new);
         mapToEntity(labDTO, lab);
         labRepository.save(lab);
     }
