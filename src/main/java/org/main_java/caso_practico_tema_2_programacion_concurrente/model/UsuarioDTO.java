@@ -35,9 +35,9 @@ public class UsuarioDTO {
     @Size(max = 255)
     private String direccion;
 
-    private RolDTO usuarios;
+    private Long rolId;
 
-    private CredencialesDTO usuario;
+    private Long credencialesId;
 
     private OffsetDateTime dateCreated;
 }

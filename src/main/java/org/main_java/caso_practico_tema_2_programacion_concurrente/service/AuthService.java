@@ -110,7 +110,7 @@ public class AuthService {
         }
 
         // Validaciones de correo
-        if (registerRequest.getCorreo() == null || !registerRequest.getCorreo().matches("^[\\w-\\.]+@(gmail\\.com|hotmail\\.com|yahoo\\.com)$")) {
+        if (registerRequest.getCorreo() == null || !registerRequest.getCorreo().matches("^[\\w-.]+@(gmail\\.com|hotmail\\.com|yahoo\\.com)$")) {
             throw new UserValidationException("El correo debe ser de una extensión válida (@gmail.com, @hotmail.com, @yahoo.com).");
         }
 
