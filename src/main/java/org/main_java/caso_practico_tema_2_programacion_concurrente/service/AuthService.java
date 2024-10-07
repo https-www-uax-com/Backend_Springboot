@@ -3,9 +3,9 @@ package org.main_java.caso_practico_tema_2_programacion_concurrente.service;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.Credenciales;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.Rol;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.Usuario;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.model.auth.AuthResponse;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.model.auth.LoginRequest;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.model.auth.RegisterRequest;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.model.AuthResponseDTO;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.model.LoginRequestDTO;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.model.RegisterRequestDTO;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.RolRepository;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.UsuarioRepository;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.CredencialesRepository;
@@ -34,35 +34,35 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Transactional
-    public ResponseEntity<AuthResponse> login(LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponseDTO> login(LoginRequestDTO loginRequest) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(loginRequest.getCorreo());
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
             if (passwordEncoder.matches(loginRequest.getContrasena(), usuario.getUsuario().getPassword())) {
                 String rol = usuario.getUsuarios().getNombre();
-                return ResponseEntity.ok(new AuthResponse("Login exitoso", "FAKE_JWT_TOKEN", rol));
+                return ResponseEntity.ok(new AuthResponseDTO("Login exitoso", "FAKE_JWT_TOKEN", rol));
             } else {
-                return ResponseEntity.status(401).body(new AuthResponse("Credenciales incorrectas", null, null));
+                return ResponseEntity.status(401).body(new AuthResponseDTO("Credenciales incorrectas", null, null));
             }
         }
 
-        return ResponseEntity.status(404).body(new AuthResponse("Usuario no encontrado", null, null));
+        return ResponseEntity.status(404).body(new AuthResponseDTO("Usuario no encontrado", null, null));
     }
 
     @Transactional
-    public ResponseEntity<AuthResponse> register(RegisterRequest registerRequest, String rolNombre) {
+    public ResponseEntity<AuthResponseDTO> register(RegisterRequestDTO registerRequest, String rolNombre) {
         // Validar entrada
         validateUserInput(registerRequest);
 
         // Verificar si el usuario ya existe
         if (usuarioRepository.findByCorreo(registerRequest.getCorreo()).isPresent()) {
-            return ResponseEntity.status(400).body(new AuthResponse("El usuario ya existe", null, null));
+            return ResponseEntity.status(400).body(new AuthResponseDTO("El usuario ya existe", null, null));
         }
 
         // Validar rol
         if (!"admin".equalsIgnoreCase(rolNombre) && !"user".equalsIgnoreCase(rolNombre)) {
-            return ResponseEntity.status(400).body(new AuthResponse("Rol no válido. Use 'admin' o 'user'.", null, null));
+            return ResponseEntity.status(400).body(new AuthResponseDTO("Rol no válido. Use 'admin' o 'user'.", null, null));
         }
 
         // Buscar o crear rol
@@ -92,10 +92,10 @@ public class AuthService {
 
         usuarioRepository.save(nuevoUsuario);
 
-        return ResponseEntity.ok(new AuthResponse("Usuario registrado con éxito", null, rolNombre));
+        return ResponseEntity.ok(new AuthResponseDTO("Usuario registrado con éxito", null, rolNombre));
     }
 
-    private void validateUserInput(RegisterRequest registerRequest) {
+    private void validateUserInput(RegisterRequestDTO registerRequest) {
         // Validaciones de nombres
         if (registerRequest.getNombre() == null || !registerRequest.getNombre().matches("[A-Za-záéíóúÁÉÍÓÚñÑ]+")) {
             throw new UserValidationException("El nombre debe contener solo letras.");
