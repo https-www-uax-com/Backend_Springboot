@@ -34,6 +34,7 @@ public class Sample {
     private Experiment experiment;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "biological_data_id")
     private BiologicalData biologicalData;
 
 }

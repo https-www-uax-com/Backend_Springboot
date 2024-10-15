@@ -1,23 +1,23 @@
 package org.main_java.caso_practico_tema_2_programacion_concurrente.service;
 
-import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.BiologicalData;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.Experiment;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.Sample;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.*;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.model.BiologicalDataDTO;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.model.SampleDTO;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.BiologicalDataRepository;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.ExperimentRepository;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.SampleRepository;
+import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.*;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.util.NotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,11 +26,21 @@ public class SampleService {
     private final SampleRepository sampleRepository;
     private final ExperimentRepository experimentRepository;
     private final BiologicalDataRepository biologicalDataRepository;
+    private final LabRepository labRepository;
+    private final ResearcherRepository researcherRepository;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private final ExecutorService executorService2 = Executors.newFixedThreadPool(100);
 
-    public SampleService(SampleRepository sampleRepository, ExperimentRepository experimentRepository, BiologicalDataRepository biologicalDataRepository) {
+    private static AtomicInteger experimentCounter = new AtomicInteger(1);
+    private static AtomicInteger labCounter = new AtomicInteger(1);
+    private static AtomicInteger researcherCounter = new AtomicInteger(1);
+
+    public SampleService(SampleRepository sampleRepository, ExperimentRepository experimentRepository, BiologicalDataRepository biologicalDataRepository, LabRepository labRepository, ResearcherRepository researcherRepository) {
         this.sampleRepository = sampleRepository;
         this.experimentRepository = experimentRepository;
         this.biologicalDataRepository = biologicalDataRepository;
+        this.labRepository = labRepository;
+        this.researcherRepository = researcherRepository;
     }
 
     // Método para obtener todas las muestras en orden
@@ -126,59 +136,114 @@ public class SampleService {
         });
     }
 
-    // Método para procesar muestras de manera concurrente
+    @Transactional
     public void processSamplesConcurrently() {
-        ForkJoinPool pool = new ForkJoinPool();
-        try {
-            pool.submit(() -> {
-                List<SampleDTO> samples = findAllAsync().join(); // Obtener todas las muestras de manera concurrente
-                samples.parallelStream().forEach(sampleDTO -> {
-                    Sample sample = sampleRepository.findById(sampleDTO.getId())
-                            .orElseThrow(() -> new NotFoundException("Sample no encontrada"));
-                    processSample(sample); // Procesar cada muestra
-                });
-            }).get();
-        } catch (Exception e) {
-            System.err.println("Error en el procesamiento concurrente: " + e.getMessage());
-        } finally {
-            pool.shutdown();
-            try {
-                pool.awaitTermination(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        List<SampleDTO> samples = findAllAsync().join();
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (SampleDTO sampleDTO : samples) {
+            futures.add(CompletableFuture.runAsync(() -> {
+                Sample sample = sampleRepository.findById(sampleDTO.getId())
+                        .orElseThrow(() -> new NotFoundException("Sample no encontrada"));
+                processSample(sample);  // Procesar cada muestra
+            }, executorService2));
         }
+
+        // Asegurar que todos los futuros se completen
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
-    // Método para procesar una muestra de forma sincrónica
+    @Async
+    @Transactional
+    public CompletableFuture<Void> processSingleSample(Long id) {
+        return CompletableFuture.runAsync(() -> {
+            Sample sample = sampleRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Sample no encontrada"));
+            processSample(sample);  // Delegar a processSample para hacer el procesamiento
+        }, executorService);
+    }
+
     @Transactional
     public void processSample(Sample sample) {
-        // Obtener datos biológicos relacionados con la muestra
-        BiologicalData biologicalData = sample.getBiologicalData();
-        if (biologicalData == null || biologicalData.getData().isEmpty()) {
-            throw new RuntimeException("Datos biológicos faltantes o incompletos para la muestra.");
+        try {
+            Sample managedSample = sampleRepository.findById(sample.getId())
+                    .orElseThrow(() -> new NotFoundException("Muestra no encontrada con ID: " + sample.getId()));
+
+            BiologicalData biologicalData = managedSample.getBiologicalData();
+            if (biologicalData == null) {
+                biologicalData = new BiologicalData();
+                biologicalData.setSampleType("TYPE_DATOS_UNDF");
+                biologicalData.setData("Datos iniciales de la muestra");
+                biologicalData.setTimestamp(LocalDateTime.now());
+                biologicalData.setAnalysisResult("PENDIENTES");
+                biologicalData = biologicalDataRepository.save(biologicalData);
+                managedSample.setBiologicalData(biologicalData);
+            }
+
+            // Verificar si la muestra ya está asociada a un experimento
+            if (managedSample.getExperiment() == null) {
+                System.out.println("La muestra ID: " + managedSample.getId() + " no está asociada a ningún experimento. Asignando...");
+                synchronized (this) {
+                    assignExperimentToSample(managedSample);
+                }
+            } else {
+                System.out.println("La muestra ID: " + managedSample.getId() + " ya está asociada al experimento ID: " + managedSample.getExperiment().getId());
+            }
+
+            sampleRepository.save(managedSample);
+            System.out.println("Procesamiento completado para la muestra ID: " + managedSample.getId());
+        } catch (Exception e) {
+            System.err.println("Error procesando la muestra ID: " + sample.getId() + " - " + e.getMessage());
+        }
+    }
+    @Transactional
+    public void assignExperimentToSample(Sample sample) {
+        Experiment experiment;
+
+        synchronized (this) {
+            // Buscamos todos los experimentos
+            List<Experiment> experiments = experimentRepository.findAllExperiments();
+
+            // Filtramos los que tienen menos de 20 muestras y que ya tienen muestras
+            Optional<Experiment> optionalExperiment = experiments.stream()
+                    .filter(exp -> exp.getSamples().size() < 20 && !exp.getSamples().isEmpty())
+                    .findFirst();
+
+            // Si no encontramos un experimento con menos de 20 muestras, creamos uno nuevo
+            experiment = optionalExperiment.orElseGet(this::createNewExperiment);
         }
 
-        // Simular proceso de análisis de los datos biológicos
-        String analysisResult = analyzeBiologicalData(biologicalData.getData());
-
-        // Actualizar los resultados del análisis en la entidad BiologicalData
-        biologicalData.setAnalysisResult(analysisResult);
-        biologicalDataRepository.save(biologicalData);
-
-        System.out.println("Resultado del análisis para la muestra: " + analysisResult);
+        sample.setExperiment(experiment);  // Asignar el experimento a la muestra
     }
 
-    // Simulación de análisis de los datos biológicos
-    private String analyzeBiologicalData(String data) {
-        int dataLength = data.length();
-        if (dataLength > 50) {
-            return "Datos óptimos - análisis satisfactorio.";
-        } else if (dataLength > 20) {
-            return "Datos suficientes - análisis realizado con éxito.";
-        } else {
-            return "Datos insuficientes - análisis incompleto.";
-        }
+    private Experiment createNewExperiment() {
+        Lab lab = labRepository.findFirstLabWithLessThanOrEqual20Experiments().orElseGet(this::createNewLab);
+        Researcher researcher = researcherRepository.findFirstResearcherWithLessThanOrEqual10Experiments().orElseGet(this::createNewResearcher);
+
+        Experiment newExperiment = new Experiment();
+        newExperiment.setExperimentName("Experimento " + experimentCounter.getAndIncrement());
+        newExperiment.setStartDate(LocalDate.now().atStartOfDay());
+        newExperiment.setEndDate(LocalDate.now().atStartOfDay().plusMonths(3));
+        newExperiment.setStatus("EN_ACTIVO");
+        newExperiment.setLab(lab);
+        newExperiment.setResearcher(researcher);
+        newExperiment.setSamples(new ArrayList<>());
+
+        return experimentRepository.save(newExperiment);
+    }
+
+    private Lab createNewLab() {
+        Lab lab = new Lab();
+        lab.setLabName("Laboratorio " + labCounter.getAndIncrement());
+        lab.setLocation("Ubicación desconocida");
+        return labRepository.save(lab);
+    }
+
+    private Researcher createNewResearcher() {
+        Researcher researcher = new Researcher();
+        researcher.setName("Investigador " + experimentCounter.getAndIncrement());
+        researcher.setSpecialty("Especialidad desconocida");
+        return researcherRepository.save(researcher);
     }
 
     // Método para mapear de entidad Sample a DTO

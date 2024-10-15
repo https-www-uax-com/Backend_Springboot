@@ -100,9 +100,11 @@ public class ResearcherService {
     @Transactional
     public CompletableFuture<Void> processResearcherAsync(Researcher researcher) {
         return CompletableFuture.runAsync(() -> {
-            System.out.println("Procesando investigador de manera asincrónica: " + researcher.getName());
-            processResearcher(researcher);
-        }, executor);  // Utilizamos el pool de hilos "executor" aquí
+            synchronized (researcher) {
+                System.out.println("Procesando investigador: " + researcher.getName());
+                processResearcher(researcher);
+            }
+        }, executor);  // Usar el pool de hilos executor
     }
 
     // Lógica sincrónica para procesar un investigador (usada por processResearcherAsync)
@@ -110,17 +112,27 @@ public class ResearcherService {
     public void processResearcher(Researcher researcher) {
         System.out.println("Procesando investigador: " + researcher.getName());
 
+        // Forzar la inicialización de la colección 'experiments' del investigador
+        if (researcher.getExperiments() != null) {
+            researcher.getExperiments().size();  // Accede a la colección para inicializarla
+        }
+
         // Verificar la cantidad de experimentos que ha supervisado
         int totalExperiments = researcher.getExperiments().size();
         System.out.println("El investigador " + researcher.getName() + " ha supervisado " + totalExperiments + " experimentos.");
 
-        // Procesar los experimentos del investigador
-        researcher.getExperiments().forEach(this::processExperiment);
+        // Sincronizar el procesamiento de los experimentos
+        researcher.getExperiments().forEach(experiment -> {
+            synchronized (experiment) {
+                processExperiment(experiment);  // Procesar cada experimento
+            }
+        });
     }
 
     // Simulación del procesamiento de un experimento supervisado por el investigador
     private void processExperiment(Experiment experiment) {
         System.out.println("Procesando experimento supervisado: " + experiment.getExperimentName());
+
         try {
             // Simular el procesamiento con una pausa de 2 segundos
             TimeUnit.SECONDS.sleep(2);
@@ -128,8 +140,24 @@ public class ResearcherService {
             Thread.currentThread().interrupt();
             System.err.println("Error al procesar el experimento: " + experiment.getExperimentName());
         }
+
         System.out.println("Experimento " + experiment.getExperimentName() + " procesado exitosamente.");
     }
+
+    // Procesamiento concurrente para múltiples investigadores
+    /*public void processAllResearchersConcurrently() {
+        List<Researcher> researchers = researcherRepository.findAll();
+
+        // Usar CompletableFuture para procesar múltiples investigadores de manera concurrente
+        List<CompletableFuture<Void>> futures = researchers.stream()
+                .map(researcher -> processResearcherAsync(researcher))
+                .collect(Collectors.toList());
+
+        // Sincronizar y esperar a que todos los futuros terminen
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        System.out.println("Todos los investigadores han sido procesados.");
+    }*/
 
     // Mapeo de entidad Researcher a DTO
     private ResearcherDTO mapToDTO(final Researcher researcher) {
@@ -141,13 +169,13 @@ public class ResearcherService {
     }
 
     // Llamar a shutdown() cuando todos los procesos han terminado
-    public void finalizeProcessing() {
+    /*public void finalizeProcessing() {
         // Aquí podrías llamar al shutdown una vez que todas las tareas han sido ejecutadas
         shutdown();
-    }
+    }*/
 
     // Cierre del ExecutorService para liberar recursos
-    public void shutdown() {
+    /*public void shutdown() {
         executor.shutdown();  // Iniciar el cierre del pool de hilos
         try {
             if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
@@ -160,6 +188,6 @@ public class ResearcherService {
             executor.shutdownNow();  // Forzar el cierre en caso de interrupción
             Thread.currentThread().interrupt();
         }
-    }
+    }*/
 }
 

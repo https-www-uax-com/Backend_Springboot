@@ -65,7 +65,7 @@ public class BiologicalDataService {
     }
 
     // Mapeo de DTO.md a entidad
-    private BiologicalData mapToEntity(final BiologicalDataDTO biologicalDataDTO, final BiologicalData biologicalData) {
+    public BiologicalData mapToEntity(final BiologicalDataDTO biologicalDataDTO, final BiologicalData biologicalData) {
         biologicalData.setSampleType(biologicalDataDTO.getSampleType());
         biologicalData.setData(biologicalDataDTO.getData());
         biologicalData.setTimestamp(biologicalDataDTO.getTimestamp());

@@ -55,4 +55,10 @@ public class SampleController {
         sampleService.processSamplesConcurrently();
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/process/{id}")
+    public ResponseEntity<Void> processSingleSample(@PathVariable Long id) {
+        sampleService.processSingleSample(id);
+        return ResponseEntity.ok().build();
+    }
 }
