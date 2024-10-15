@@ -11,24 +11,8 @@
     <groupId>org.main_java</groupId>
     <artifactId>Caso_Practico_Tema_2_Programacion_Concurrente</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Caso_Practico_Tema_2_Programacion_Concurrente</name>
-    <description>Caso_Practico_Tema_2_Programacion_Concurrente</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
-    <properties>
-        <java.version>17</java.version>
-    </properties>
+    <packaging>war</packaging>
+    <name>Springboot</name>
     <dependencies>
         <dependency>
             <groupId>jakarta.servlet</groupId>

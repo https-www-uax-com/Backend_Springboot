@@ -39,4 +39,8 @@ public class Experiment {
     @OneToMany(mappedBy = "experiment", cascade = CascadeType.ALL)
     private List<Sample> samples;  // Relación con las muestras
 
+    @ManyToOne
+    @JoinColumn(name = "lab_id", nullable = false)  // El nombre de la columna es opcional
+    private Lab lab;  // Relación con Lab
+
 }

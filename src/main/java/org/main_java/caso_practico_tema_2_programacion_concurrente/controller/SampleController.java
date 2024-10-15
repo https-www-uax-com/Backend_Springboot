@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/samples")
+@RequestMapping("/api/sample")
 public class SampleController {
 
     private final SampleService sampleService;

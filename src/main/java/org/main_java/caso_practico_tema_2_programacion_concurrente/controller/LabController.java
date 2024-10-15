@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/labs")
+@RequestMapping("/api/lab")
 public class LabController {
 
     private final LabService labService;
