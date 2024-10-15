@@ -23,5 +23,8 @@ public class BiologicalDataDTO {
     @NotNull
     private LocalDateTime timestamp;
 
+    @NotNull
+    private String analysisResult;
+
 }
 

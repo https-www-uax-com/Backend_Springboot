@@ -26,5 +26,7 @@ public class ExperimentDTO {
 
     private List<SampleDTO> samples;  // Lista de muestras asociadas al experimento
 
+    @NotNull
+    private String status;
 }
 

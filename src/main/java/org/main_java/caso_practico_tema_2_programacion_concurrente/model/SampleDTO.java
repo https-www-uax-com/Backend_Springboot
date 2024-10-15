@@ -11,9 +11,17 @@ public class SampleDTO {
 
     private Long id;
 
-    @NotNull
-    @Size(max = 255)
-    private String sampleCode;
+    private String uspCategory;
+
+    private String uspClass;
+
+    private String uspDrug;
+
+    private String keggIdDrug;
+
+    private String drugExample;
+
+    private String nomenclature;
 
     @NotNull
     private Long experimentId;  // ID del experimento al que pertenece la muestra

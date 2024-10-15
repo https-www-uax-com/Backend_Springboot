@@ -28,6 +28,14 @@ public class Experiment {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Column(nullable = false)
+    private String status;  // Nuevo campo para el estado del experimento
+
+    // Relación con la entidad Researcher, que maneja el experimento
+    @ManyToOne
+    @JoinColumn(name = "researcher_id", nullable = false)
+    private Researcher researcher;
+
     @OneToMany(mappedBy = "experiment", cascade = CascadeType.ALL)
     private List<Sample> samples;  // Relación con las muestras
 

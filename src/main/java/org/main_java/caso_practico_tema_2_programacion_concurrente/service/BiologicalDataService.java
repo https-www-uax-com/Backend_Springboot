@@ -5,9 +5,12 @@ import org.main_java.caso_practico_tema_2_programacion_concurrente.repos.Biologi
 import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.BiologicalData;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.util.NotFoundException;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +70,54 @@ public class BiologicalDataService {
         biologicalData.setData(biologicalDataDTO.getData());
         biologicalData.setTimestamp(biologicalDataDTO.getTimestamp());
         return biologicalData;
+    }
+
+    @Async
+    @Transactional(readOnly = true)
+    public CompletableFuture<List<BiologicalDataDTO>> findAllAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<BiologicalData> biologicalDataList = biologicalDataRepository.findAll();
+            return biologicalDataList.stream()
+                    .map(this::mapToDTO)
+                    .collect(Collectors.toList());
+        });
+    }
+
+    // Método para procesar los datos biológicos de una muestra
+    @Transactional
+    public void processBiologicalData(BiologicalData biologicalData) {
+        System.out.println("Procesando datos biológicos: " + biologicalData.getId());
+
+        // Simular proceso de análisis de los datos biológicos
+        String analysisResult = analyzeBiologicalData(biologicalData.getData());
+
+        // Actualizar los resultados del análisis en la entidad BiologicalData
+        biologicalData.setAnalysisResult(analysisResult);
+        biologicalDataRepository.save(biologicalData);
+
+        System.out.println("Resultado del análisis: " + analysisResult);
+    }
+
+    // Simulación del análisis de datos biológicos
+    private String analyzeBiologicalData(String data) {
+        int dataLength = data.length();
+        if (dataLength > 50) {
+            return "Datos óptimos - análisis satisfactorio.";
+        } else if (dataLength > 20) {
+            return "Datos suficientes - análisis realizado con éxito.";
+        } else {
+            return "Datos insuficientes - análisis incompleto.";
+        }
+    }
+
+    // Método auxiliar para mapear de entidad a DTO
+    private BiologicalDataDTO mapToDTO(final BiologicalData biologicalData) {
+        BiologicalDataDTO biologicalDataDTO = new BiologicalDataDTO();
+        biologicalDataDTO.setId(biologicalData.getId());
+        biologicalDataDTO.setSampleType(biologicalData.getSampleType());
+        biologicalDataDTO.setData(biologicalData.getData());
+        biologicalDataDTO.setTimestamp(biologicalData.getTimestamp());
+        return biologicalDataDTO;
     }
 }
 
