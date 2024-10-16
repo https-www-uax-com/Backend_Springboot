@@ -23,7 +23,7 @@ public class Researcher {
     @Column(nullable = false)
     private String specialty;
 
-    @OneToMany(mappedBy = "researcher", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "researcher", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Experiment> experiments;
 
 }

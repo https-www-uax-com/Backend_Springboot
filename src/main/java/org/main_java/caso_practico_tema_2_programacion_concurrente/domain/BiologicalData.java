@@ -27,4 +27,20 @@ public class BiologicalData {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
+    @Column(nullable = true)
+    private String analysisResult;  // Nuevo campo para el resultado del análisis
+
+    @OneToOne(mappedBy = "biologicalData", cascade = CascadeType.ALL)
+    private Sample sample;
+
+
+    @Override
+    public String toString() {
+        return "BiologicalData{" +
+                "sampleType='" + sampleType + '\'' +
+                ", data='" + data + '\'' +
+                ", timestamp=" + timestamp +
+                ", analysisResult='" + analysisResult + '\'' +
+                '}';
+    }
 }

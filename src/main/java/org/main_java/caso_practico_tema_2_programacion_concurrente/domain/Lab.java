@@ -23,7 +23,7 @@ public class Lab {
     @Column(nullable = false)
     private String location;
 
-    @OneToMany(mappedBy = "lab", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "lab", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Experiment> experiments;
 
 }
