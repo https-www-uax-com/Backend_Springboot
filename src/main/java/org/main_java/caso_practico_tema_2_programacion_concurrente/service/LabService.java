@@ -25,11 +25,13 @@ public class LabService {
     private final LabRepository labRepository;
     //private final ExperimentRepository experimentRepository;
     private final ExecutorService executor = Executors.newFixedThreadPool(5);
+    private final ExperimentService experimentService;
 
 
-    public LabService(LabRepository labRepository, ExperimentRepository experimentRepository) {
+    public LabService(LabRepository labRepository, ExperimentRepository experimentRepository, ExperimentService experimentService) {
         this.labRepository = labRepository;
        //this.experimentRepository = experimentRepository;
+        this.experimentService = experimentService;
     }
 
 
@@ -117,17 +119,15 @@ public class LabService {
         });
     }
 
-    // Procesamiento de lógica de negocio específica para laboratorios de forma asincrónica
     @Async
     @Transactional
     public CompletableFuture<Void> processLabAsync(Lab lab) {
         return CompletableFuture.runAsync(() -> {
-            System.out.println("Procesando laboratorio de forma asincrónica: " + lab.getLabName());
+            System.out.println("Procesando laboratorio: " + lab.getLabName());
             processLab(lab);
         }, executor);
     }
 
-    // Procesar laboratorio de forma sincrónica (usado por processLabAsync)
     @Transactional
     public void processLab(Lab lab) {
         System.out.println("Procesando laboratorio: " + lab.getLabName());
@@ -138,22 +138,12 @@ public class LabService {
 
         // Procesar los experimentos de este laboratorio
         lab.getExperiments().forEach(experiment -> {
-            processExperiment(experiment);
+            experimentService.processSingleExperiment(experimentService.mapToDTO(experiment));
         });
+        System.out.println("Los laboratorios han sido procesados con exito.");
     }
 
-    // Simulación de procesamiento de cada experimento dentro del laboratorio
-    private void processExperiment(Experiment experiment) {
-        System.out.println("Procesando experimento: " + experiment.getExperimentName());
-        try {
-            // Simular un procesamiento que tarda 2 segundos por experimento
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.err.println("Error al procesar el experimento: " + experiment.getExperimentName());
-        }
-        System.out.println("Experimento " + experiment.getExperimentName() + " procesado exitosamente.");
-    }
+
 
     // Método auxiliar para mapear entidad Lab a DTO
     private LabDTO mapToDTO(final Lab lab) {

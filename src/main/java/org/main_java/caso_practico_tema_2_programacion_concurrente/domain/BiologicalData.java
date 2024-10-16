@@ -33,4 +33,14 @@ public class BiologicalData {
     @OneToOne(mappedBy = "biologicalData", cascade = CascadeType.ALL)
     private Sample sample;
 
+
+    @Override
+    public String toString() {
+        return "BiologicalData{" +
+                "sampleType='" + sampleType + '\'' +
+                ", data='" + data + '\'' +
+                ", timestamp=" + timestamp +
+                ", analysisResult='" + analysisResult + '\'' +
+                '}';
+    }
 }

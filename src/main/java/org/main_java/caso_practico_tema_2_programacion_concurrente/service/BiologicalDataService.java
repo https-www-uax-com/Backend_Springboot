@@ -86,7 +86,7 @@ public class BiologicalDataService {
     // Método para procesar los datos biológicos de una muestra
     @Transactional
     public void processBiologicalData(BiologicalData biologicalData) {
-        System.out.println("Procesando datos biológicos: " + biologicalData.getId());
+        System.out.println("Procesando datos biológicos: " + biologicalData.toString());
 
         // Simular proceso de análisis de los datos biológicos
         String analysisResult = analyzeBiologicalData(biologicalData.getData());

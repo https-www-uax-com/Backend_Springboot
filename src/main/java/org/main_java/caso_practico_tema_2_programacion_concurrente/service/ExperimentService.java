@@ -83,7 +83,7 @@ public class ExperimentService {
         return experiment;
     }
 
-    private ExperimentDTO mapToDTO(final Experiment experiment) {
+    public ExperimentDTO mapToDTO(final Experiment experiment) {
         ExperimentDTO experimentDTO = new ExperimentDTO();
         experimentDTO.setId(experiment.getId());
         experimentDTO.setExperimentName(experiment.getExperimentName());

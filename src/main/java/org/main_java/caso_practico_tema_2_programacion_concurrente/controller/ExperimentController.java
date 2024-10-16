@@ -1,5 +1,6 @@
 package org.main_java.caso_practico_tema_2_programacion_concurrente.controller;
 
+import org.main_java.caso_practico_tema_2_programacion_concurrente.domain.Experiment;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.model.ExperimentDTO;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.service.ExperimentService;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +35,18 @@ public class ExperimentController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createExperiment(@RequestBody ExperimentDTO experimentDTO) {
-        return ResponseEntity.ok(experimentService.create(experimentDTO));
+    public ResponseEntity<Long> createExperiment(@RequestBody Experiment experiment) {
+        return ResponseEntity.ok(experimentService.create(experimentService.mapToDTO(experiment)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateExperiment(@PathVariable Long id, @RequestBody ExperimentDTO experimentDTO) {
-        experimentService.update(id, experimentDTO);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> updateExperiment(@PathVariable Long id, @RequestBody ExperimentDTO experimentDTO) {
+        try {
+            experimentService.update(id, experimentDTO);
+            return ResponseEntity.ok("Experiment updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid data: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
