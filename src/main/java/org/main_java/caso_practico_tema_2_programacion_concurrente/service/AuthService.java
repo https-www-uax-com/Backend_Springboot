@@ -61,7 +61,7 @@ public class AuthService {
         }
 
         // Validar rol
-        if (!"admin".equalsIgnoreCase(rolNombre) && !"user".equalsIgnoreCase(rolNombre)) {
+        if (!"admin".equalsIgnoreCase(rolNombre) && !"user".equalsIgnoreCase(rolNombre) && !"researcher".equalsIgnoreCase(rolNombre)) {
             return ResponseEntity.status(400).body(new AuthResponseDTO("Rol no válido. Use 'admin' o 'user'.", null, null));
         }
 

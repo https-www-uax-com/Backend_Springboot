@@ -1,7 +1,6 @@
 package org.main_java.caso_practico_tema_2_programacion_concurrente;
 
 import org.main_java.caso_practico_tema_2_programacion_concurrente.model.RegisterRequestDTO;
-import org.main_java.caso_practico_tema_2_programacion_concurrente.model.LoginRequestDTO;
 import org.main_java.caso_practico_tema_2_programacion_concurrente.service.AuthService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,6 +19,13 @@ public class CasoPracticoTema2ProgramacionConcurrenteApplication {
     @Bean
     CommandLineRunner initUsers(AuthService authService) {
         return args -> {
+
+            registrarNuevoUsuario(
+                    authService,
+                    "Investigador", "ApellidoAA", "ApellidoBB", "researcher@gmail.com", 987654321,
+                    "Calle Secundaria 456", "a12345_678", "researcher"
+            );
+
             // Registro de usuarios
             registrarNuevoUsuario(
                     authService,
@@ -29,20 +35,14 @@ public class CasoPracticoTema2ProgramacionConcurrenteApplication {
 
             registrarNuevoUsuario(
                     authService,
-                    "Investigador", "ApellidoAA", "ApellidoBB", "researcher@gmail.com", 987654321,
-                    "Calle Secundaria 456", "a12345_67", "researcher"
-            );
-
-            registrarNuevoUsuario(
-                    authService,
                     "Usuario", "ApellidoCC", "ApellidoDD", "usuario@gmail.com", 555666777,
-                    "Avenida Tercera 789", "a12345_67", "user"
+                    "Avenida Tercera 789", "a12345_679", "user"
             );
         };
     }
 
-    private String registrarNuevoUsuario(AuthService authService, String nombre, String apellido1, String apellido2,
-                                         String correo, int telefono, String direccion, String contrasena, String rolNombre) {
+    private void registrarNuevoUsuario(AuthService authService, String nombre, String apellido1, String apellido2,
+                                       String correo, int telefono, String direccion, String contrasena, String rolNombre) {
 
         // Crear el objeto RegisterRequest con la información del usuario
         RegisterRequestDTO registerRequest = new RegisterRequestDTO();
@@ -59,14 +59,6 @@ public class CasoPracticoTema2ProgramacionConcurrenteApplication {
         authService.register(registerRequest, rolNombre);
 
         System.out.println("Usuario registrado con nombre: " + nombre + " y rol: " + rolNombre);
-
-        // Crear objeto LoginRequest para autenticar al usuario
-        LoginRequestDTO loginRequest = new LoginRequestDTO();
-        loginRequest.setCorreo(correo);
-        loginRequest.setContrasena(contrasena);
-
-        // Autenticación para obtener el token
-        return Objects.requireNonNull(authService.login(loginRequest).getBody()).getToken();
     }
 }
 
